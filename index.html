@@ -10,7 +10,7 @@
 
 <body class="bg-gray-100 min-h-screen">
 
-    <!-- LOGIN PAGE  -->
+    <!-- ==================== LOGIN PAGE ==================== -->
     <div id="loginPage" class="min-h-screen flex items-center justify-center">
         <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md">
 
@@ -58,16 +58,16 @@
 
         </div>
     </div>
-    <!-- END LOGIN PAGE  -->
 
 
-    <!-- DASHBOARD Page  -->
+
+    <!-- ==================== DASHBOARD PAGE ==================== -->
     <div id="dashboardPage" class="hidden">
 
         <!-- Navbar -->
         <nav class="bg-white shadow-sm px-6 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <img src="github-logo.png" alt="GitHub Logo" class="w-8 h-8" />
+                <img src="./assets/github-logo.png" alt="GitHub Logo" class="w-8 h-8" />
                 <span class="font-bold text-gray-800 text-lg">GitHub Issues Tracker</span>
             </div>
             <div class="flex items-center gap-3">
@@ -96,8 +96,8 @@
             <!-- Issue Count Section -->
             <div class="bg-white rounded-lg p-4 mb-6 flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <span class="text-purple-600 text-lg">⚙</span>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                        <img src="./assets/Aperture.png" alt="Issues Icon" class="w-10 h-10" />
                     </div>
                     <div>
                         <p id="issueCountText" class="font-bold text-gray-800 text-lg">0 Issues</p>
@@ -125,10 +125,10 @@
 
         </div>
     </div>
-    <!-- END DASHBOARD PAGE  -->
 
 
-    <!-- MODAL -->
+
+    <!-- ==================== MODAL ==================== -->
     <div id="issueModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
 
@@ -162,7 +162,7 @@
 
         </div>
     </div>
-    
+
 
     <script src="js/scripts.js"></script>
 </body>
