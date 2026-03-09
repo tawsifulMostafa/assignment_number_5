@@ -11,9 +11,8 @@ function handleLogin() {
     } else {
         errorMessage.classList.remove('hidden')
     }
-
-
 }
+
 function loadIssues(tab) {
     fetch('https://phi-lab-server.vercel.app/api/v1/lab/issues')
         .then(result => result.json())
@@ -59,7 +58,7 @@ function renderCards(issues) {
         card.innerHTML = `
       <div class="flex items-center justify-between mb-3">
         <img src="${statusIcon}" alt="status" class="w-5 h-5" />
-     <span style="${priorityColor}" class="text-xs font-semibold px-2 py-0.5 rounded-full cursor-pointer" id="priority-${issue.id}">${issue.priority || "N/A"}</span>
+        <span style="${priorityColor}" class="text-xs font-semibold px-2 py-0.5 rounded-full cursor-pointer" id="priority-${issue.id}">${issue.priority || "N/A"}</span>
       </div>
       <h3 class="font-semibold text-gray-800 text-sm mb-1">${issue.title}</h3>
       <p class="text-gray-500 text-xs mb-3">${issue.description ? issue.description.slice(0, 80) + "..." : ""}</p>
@@ -74,6 +73,7 @@ function renderCards(issues) {
         grid.appendChild(card);
     });
 }
+
 function getPriorityColor(priority) {
     if (priority === 'high') return 'background:#fee2e2; color:#ef4444;'
     if (priority === 'medium') return 'background:#fef9c3; color:#ca8a04;'
@@ -95,6 +95,7 @@ function formatDate(dateStr) {
     const d = new Date(dateStr)
     return d.toLocaleDateString('en-GB')
 }
+
 function openModal(id) {
     fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
         .then(res => res.json())
@@ -103,7 +104,7 @@ function openModal(id) {
 
             document.getElementById('modalTitle').textContent = issue.title
             document.getElementById('modalOpenedBy').textContent = `• Opened by ${issue.author}`
-            document.getElementById('modalDate').textContent = `• ${issue.createdAt}`
+            document.getElementById('modalDate').textContent = `• ${formatDate(issue.createdAt)}`
             document.getElementById('modalBody').textContent = issue.description
             document.getElementById('modalAssignee').textContent = issue.assignee || 'Unassigned'
             document.getElementById('modalPriority').textContent = issue.priority
@@ -112,16 +113,27 @@ function openModal(id) {
             statusEl.textContent = issue.status === 'open' ? 'Opened' : 'Closed'
             statusEl.style = issue.status === 'open' ? 'background:#22c55e; color:white; padding: 2px 10px; border-radius: 999px; font-size: 12px;' : 'background:#a855f7; color:white; padding: 2px 10px; border-radius: 999px; font-size: 12px;'
 
+            const labelsEl = document.getElementById('modalLabels')
+            labelsEl.innerHTML = ''
+            issue.labels.forEach(label => {
+                const span = document.createElement('span')
+                span.textContent = label
+                if (label === 'bug') span.style = 'border: 1px solid #f87171; color:#ef4444; background:#fef2f2; padding: 2px 8px; border-radius: 999px; font-size: 11px;'
+                if (label === 'help wanted') span.style = 'border: 1px solid #fb923c; color:#f97316; background:#fff7ed; padding: 2px 8px; border-radius: 999px; font-size: 11px;'
+                if (label === 'enhancement') span.style = 'border: 1px solid #4ade80; color:#16a34a; background:#f0fdf4; padding: 2px 8px; border-radius: 999px; font-size: 11px;'
+                if (label === 'documentation') span.style = 'border: 1px solid #60a5fa; color:#3b82f6; background:#eff6ff; padding: 2px 8px; border-radius: 999px; font-size: 11px;'
+                if (label === 'good first issue') span.style = 'border: 1px solid #c084fc; color:#a855f7; background:#faf5ff; padding: 2px 8px; border-radius: 999px; font-size: 11px;'
+                labelsEl.appendChild(span)
+            })
+
             document.getElementById('issueModal').classList.remove('hidden')
         })
 }
+
 function closeModal() {
     document.getElementById('issueModal').classList.add('hidden')
 }
 
-// function openModal(id) {
-//     console.log(id)
-// }
 function switchTab(tab) {
     document.getElementById('tabAll').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
     document.getElementById('tabOpen').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
@@ -133,6 +145,7 @@ function switchTab(tab) {
 
     loadIssues(tab)
 }
+
 function handleSearch() {
     const q = document.getElementById('searchInput').value.trim()
     if (!q) {
@@ -147,17 +160,3 @@ function handleSearch() {
             renderCards(issues)
         })
 }
-
-// "id": 1,
-//       "title": "Fix navigation menu on mobile devices",
-//       "description": "The navigation menu doesn't collapse properly on mobile devices. Need to fix the responsive behavior.",
-//       "status": "open",
-//       "labels": [
-//         "bug",
-//         "help wanted"
-//       ],
-//       "priority": "high",
-//       "author": "john_doe",
-//       "assignee": "jane_smith",
-//       "createdAt": "2024-01-15T10:30:00Z",
-//       "updatedAt": "2024-01-15T10:30:00Z
