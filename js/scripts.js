@@ -7,24 +7,25 @@ function handleLogin() {
     if (userName === 'admin' && userPassword === 'admin123') {
         loginPage.classList.add('hidden')
         dashBoardPage.classList.remove('hidden')
-        loadIssues()
+        loadIssues("all")
     } else {
         errorMessage.classList.remove('hidden')
     }
 
 
 }
-function loadIssues() {
+function loadIssues(tab) {
     fetch('https://phi-lab-server.vercel.app/api/v1/lab/issues')
         .then(result => result.json())
         .then(data => {
-            const issues = data.data
+            let issues = data.data
+            if (tab === 'open') issues = issues.filter(issue => issue.status === 'open')
+            if (tab === 'closed') issues = issues.filter(issue => issue.status === 'closed')
             document.getElementById('loadingSpinner').classList.add('hidden')
             document.getElementById('issueCountText').textContent = `${issues.length} Issues`
             renderCards(issues)
         })
 }
-
 
 function renderCards(issues) {
     const grid = document.getElementById("issues-Grid");
@@ -98,6 +99,17 @@ function formatDate(dateStr) {
 
 function openModal(id) {
     console.log(id)
+}
+function switchTab(tab) {
+    document.getElementById('tabAll').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
+    document.getElementById('tabOpen').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
+    document.getElementById('tabClosed').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
+
+    if (tab === 'all') document.getElementById('tabAll').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-indigo-600 text-white'
+    if (tab === 'open') document.getElementById('tabOpen').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-indigo-600 text-white'
+    if (tab === 'closed') document.getElementById('tabClosed').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-indigo-600 text-white'
+
+    loadIssues(tab)
 }
 
 // "id": 1,
