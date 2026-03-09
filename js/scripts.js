@@ -95,11 +95,33 @@ function formatDate(dateStr) {
     const d = new Date(dateStr)
     return d.toLocaleDateString('en-GB')
 }
-
-
 function openModal(id) {
-    console.log(id)
+    fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            const issue = data.data
+
+            document.getElementById('modalTitle').textContent = issue.title
+            document.getElementById('modalOpenedBy').textContent = `• Opened by ${issue.author}`
+            document.getElementById('modalDate').textContent = `• ${issue.createdAt}`
+            document.getElementById('modalBody').textContent = issue.description
+            document.getElementById('modalAssignee').textContent = issue.assignee || 'Unassigned'
+            document.getElementById('modalPriority').textContent = issue.priority
+
+            const statusEl = document.getElementById('modalStatus')
+            statusEl.textContent = issue.status === 'open' ? 'Opened' : 'Closed'
+            statusEl.style = issue.status === 'open' ? 'background:#22c55e; color:white; padding: 2px 10px; border-radius: 999px; font-size: 12px;' : 'background:#a855f7; color:white; padding: 2px 10px; border-radius: 999px; font-size: 12px;'
+
+            document.getElementById('issueModal').classList.remove('hidden')
+        })
 }
+function closeModal() {
+    document.getElementById('issueModal').classList.add('hidden')
+}
+
+// function openModal(id) {
+//     console.log(id)
+// }
 function switchTab(tab) {
     document.getElementById('tabAll').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
     document.getElementById('tabOpen').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-gray-700 border border-gray-300'
@@ -110,6 +132,20 @@ function switchTab(tab) {
     if (tab === 'closed') document.getElementById('tabClosed').className = 'px-5 py-2 rounded text-sm font-medium cursor-pointer bg-indigo-600 text-white'
 
     loadIssues(tab)
+}
+function handleSearch() {
+    const q = document.getElementById('searchInput').value.trim()
+    if (!q) {
+        loadIssues('all')
+        return
+    }
+    fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            const issues = data.data || []
+            document.getElementById('issueCountText').textContent = `${issues.length} Issues`
+            renderCards(issues)
+        })
 }
 
 // "id": 1,
