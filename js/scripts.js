@@ -19,37 +19,59 @@ function loadIssues() {
         .then(result => result.json())
         .then(data => {
             const issues = data.data
+            document.getElementById('loadingSpinner').classList.add('hidden')
+            document.getElementById('issueCountText').textContent = `${issues.length} Issues`
             renderCards(issues)
         })
 }
 
 
-function renderCards(issue) {
-    document.getElementById('loadingSpinner').classList.add('hidden')
-    const grid = document.getElementById('issues-Grid')
-    grid.classList.remove('hidden')
-    issue.forEach(issue => {
-        const card = document.createElement('div')
+function renderCards(issues) {
+    const grid = document.getElementById("issues-Grid");
+    const noResults = document.getElementById("noResults");
 
-        card.className = `bg-white rounded-lg shadow-sm border-t-4 p-4`
+    grid.innerHTML = "";
+
+    if (!issues || issues.length === 0) {
+        grid.classList.add("hidden");
+        noResults.classList.remove("hidden");
+        return;
+    }
+
+    noResults.classList.add("hidden");
+    grid.classList.remove("hidden");
+
+    issues.forEach(issue => {
+        const isOpen = issue.status === "open";
+        const borderColor = isOpen ? "border-t-green-500" : "border-t-purple-500";
+        const statusIcon = isOpen ? "./assets/Open-Status.png" : "./assets/Closed- Status .png";
+
+        const labels = (issue.labels || []).map(label =>
+            `<span style="font-size:11px; padding: 2px 8px; border-radius: 999px; ${getLabelColor(label)}">${label}</span>`
+        ).join("");
+
+        const priorityColor = getPriorityColor(issue.priority);
+
+        const card = document.createElement("div");
+        card.className = `bg-white rounded-lg shadow-sm border-t-4 ${borderColor} p-4`;
+
         card.innerHTML = `
-       <div class="flex items-center justify-between mb-3">
-       <img src="${issue.status === 'open' ? './assets/Open-Status.png' : './assets/Closed- Status .png'}" class="w-5 h-5" />
-      <span style="${getPriorityColor(issue.priority)}" class="text-xs font-semibold px-2 py-0.5 rounded-full cursor-pointer" id="priority-${issue.id}">${issue.priority}</span>
-      
-       </div>
-        <p>${issue.title}</p>
-        <p class="text-gray-500 text-xs mb-3">${issue.description}</p>
-        <div class="flex flex-wrap gap-1 mb-3">${issue.labels}</div>
-        <div class="text-xs text-gray-400">
-       <p>#${issue.id} by ${issue.author}</p>
-      <p>${issue.createdAt}</p>
+      <div class="flex items-center justify-between mb-3">
+        <img src="${statusIcon}" alt="status" class="w-5 h-5" />
+     <span style="${priorityColor}" class="text-xs font-semibold px-2 py-0.5 rounded-full cursor-pointer" id="priority-${issue.id}">${issue.priority || "N/A"}</span>
       </div>
-`
-        grid.appendChild(card)
-        card.querySelector(`#priority-${issue.id}`).addEventListener('click', () => openModal(issue.id))
-    })
+      <h3 class="font-semibold text-gray-800 text-sm mb-1">${issue.title}</h3>
+      <p class="text-gray-500 text-xs mb-3">${issue.description ? issue.description.slice(0, 80) + "..." : ""}</p>
+      <div class="flex flex-wrap gap-1 mb-3">${labels}</div>
+      <div class="text-xs text-gray-400">
+        <p>#${issue.id} by ${issue.author || "unknown"}</p>
+        <p>${formatDate(issue.createdAt)}</p>
+      </div>
+    `;
 
+        card.querySelector(`#priority-${issue.id}`).addEventListener("click", () => openModal(issue.id));
+        grid.appendChild(card);
+    });
 }
 function getPriorityColor(priority) {
     if (priority === 'high') return 'background:#fee2e2; color:#ef4444;'
@@ -58,8 +80,25 @@ function getPriorityColor(priority) {
     return ''
 }
 
+function getLabelColor(label) {
+    if (label === 'bug') return 'border: 1px solid #f87171; color:#ef4444; background:#fef2f2;'
+    if (label === 'help wanted') return 'border: 1px solid #fb923c; color:#f97316; background:#fff7ed;'
+    if (label === 'enhancement') return 'border: 1px solid #4ade80; color:#16a34a; background:#f0fdf4;'
+    if (label === 'documentation') return 'border: 1px solid #60a5fa; color:#3b82f6; background:#eff6ff;'
+    if (label === 'good first issue') return 'border: 1px solid #c084fc; color:#a855f7; background:#faf5ff;'
+    return 'border: 1px solid #d1d5db; color:#6b7280; background:#f9fafb;'
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('en-GB')
+}
 
 
+function openModal(id) {
+    console.log(id)
+}
 
 // "id": 1,
 //       "title": "Fix navigation menu on mobile devices",
